@@ -1,12 +1,8 @@
 # 网络安全——实验一
 
-------
-
 
 
 ## 基于 VirtualBox 的网络攻防基础环境搭建
-
-------
 
 
 
@@ -39,7 +35,7 @@
 
 - 搭建满足如下拓扑图所示的虚拟机网络拓扑
 
-  ![topological_map](img\topological_map.jpg)
+  ![topological_map](img/topological_map.jpg)
 
 > 根据实验宿主机的性能条件，可以适度精简靶机数量
 
