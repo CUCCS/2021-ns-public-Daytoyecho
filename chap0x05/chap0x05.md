@@ -309,71 +309,123 @@ sudo apt install ufw
 
 #### TCP Xmas scan
 
-
+[tcp_xmas_scan——python文件](code/tcp_xmas_scan.py)
 
 - Closed
   
+  ![tcp_xmas_scan_close_status](img/tcp_xmas_scan_close_status.jpg)
   
+  - 攻击机执行代码：
   
-- Open
+    ![tcp_xmas_scan_closed_attacker](img/tcp_xmas_scan_closed_attacker.jpg)
+  
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  
+    ![tcp_xmas_scan_close_package](img/tcp_xmas_scan_close_package.jpg)
+  
+    用wireshark打开抓到的包：
+  
+    ![tcp_xmas_scan_close_package_wireshark](img/tcp_xmas_scan_close_package_wireshark.jpg)
+  
+  - `nmap`复刻：
+  
+    ```
+    sudo nmap -sX -p 80 172.16.111.134
+    ```
+  
+    ![nmap7](img/nmap7.jpg)
+  
+- Open|Filtered
 
+  ![tcp_xmas_scan_open_status](img/tcp_xmas_scan_open_status.jpg)
   
+  - 攻击机执行代码
   
-- Filtered
+    ![tcp_xmas_scan_open_or_filter_attacker](img/tcp_xmas_scan_open_or_filter_attacker.jpg)
   
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
   
+    ![tcp_xmas_scan_open_or_filter_package](img/tcp_xmas_scan_open_or_filter_package.jpg)
+  
+    用wireshark打开刚刚抓取到的包：
+  
+    ![tcp_xmas_scan_open_or_filter_package_wireshark](img/tcp_xmas_scan_open_or_filter_package_wireshark.jpg)
+  
+  - `nmap`复刻：
+  
+    ![nmap8](img/nmap8.jpg)
+
+
 
 #### TCP fin scan
 
+[tcp_fin_scan——python文件](code/tcp_fin_scan.py)
+
 
 - Closed
   
-  
-  
-- Open
+  - 攻击机执行代码：
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  - `nmap`复刻：
+- Open|Filtered
 
-  
-  
-- Filtered
-  
-  
+  - 攻击机执行代码：
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  - `nmap`复刻：
+
+
 
 #### TCP null scan
 
+[tcp_null_scan——python文件](code/tcp_null_scan.py)
+
 - Closed
   
-  
-  
-- Open
+  - 攻击机执行代码：
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  - `nmap`复刻：
+- Open|Filtered
 
-  
-  
-- Filtered
-  
-  
+  - 攻击机执行代码：
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  - `nmap`复刻：
+
 
 
 #### UDP scan
 
+[udp_scan——python文件](code/udp_scan.py)
+
 
 - Closed
   
-  
-  
-- Open
+  - 攻击机执行代码：
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  - `nmap`复刻：
+- Open|Filtered
 
-  
-  
-- Filtered
-  
-  
+  - 攻击机执行代码：
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  - `nmap`复刻：
+
+
 
 #### 其他实验问题的回答
 
-- 
+- 提供每一次扫描测试的抓包结果并分析与课本中的扫描方法原理是否相符？如果不同，试分析原因。
+
+  答：从上述实验过程可以看出：通过python编程实现的每一次扫描测试的抓包结果与课本中的扫描方法原理完全相符。
 
 
-#### 遇到的问题和解决办法：
+
+### 课后思考题：
+
+- 通过本章网络扫描基本原理的学习，试推测应用程序版本信息的扫描原理，和网络漏洞的扫描原理。
+- 网络扫描知识库的构建方法有哪些？
+
+
+
+### 遇到的问题和解决办法：
 
 1. 安装ufw时的报错：
 
@@ -391,7 +443,9 @@ sudo apt install ufw
 
    ![attacker_correction](img/attacker_correction.jpg)
 
-### 参考
+
+
+### 参考连接
 
 - [scapy2.4.4文档](https://scapy.readthedocs.io/en/latest/)
 - [B站授课视频](https://www.bilibili.com/video/BV1CL41147vX?p=49)
