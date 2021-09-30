@@ -29,6 +29,8 @@
 - [x] 在实验报告中详细说明实验网络环境拓扑、被测试 IP 的端口状态是如何模拟的
 - [x] （可选）复刻 `nmap` 的上述扫描技术实现的命令行参数开关
 
+------
+
 ### Scapy 基础
 
 ```python
@@ -53,6 +55,8 @@ pkt = IP("...")/TCP(dport=[n for n in range(22, 3389)], flags="S")
 ans, uans = sr(pkt)
 ans.summary() # flag为SA表示开放，RA表示关闭
 ```
+------
+
 ### 实验原理
 
 **参考链接：**
@@ -127,7 +131,7 @@ ans.summary() # flag为SA表示开放，RA表示关闭
 | 2    | S -> C   | UDP+port(n) 响应数据 | 无响应/其他拒绝反馈报文    |
 |      | 状态推断 | 开放 ✅               | 开放 ✅ / 关闭 ⛔ / 被过滤 ⚠️ |
 
-
+------
 
 ### 实验过程
 
@@ -156,6 +160,16 @@ sudo apt install ufw
   systemctl stop apache2 #关闭端口80
   systemctl stop dnsmasq #关闭端口53
   ```
+  
+  - `dnsmasq`
+  
+    ```
+    sudo apt-get update 
+    sudo apt-get install dnsmasq ##安装dnsmasq
+    systemctl start dnsmasq #启动
+    systemctl status dnsmasq #查看状态
+    systemctl stop dnsmasq #关闭
+    ```
 - **开启状态**：对应端口开启监听: `apache2`基于TCP, 在80端口提供服务; `DNS`服务基于`UDP`,在53端口提供服务。防火墙处于关闭状态。
   
   ```bash
@@ -396,7 +410,7 @@ sudo apt install ufw
 
 - Open|Filtered(Open状态和Filtered状态的实验过程，除了靶机最开始执行的命令不一样，其他所有结果【抓包过程和抓包结果】都相同，也和前面的实验原理匹配上了)
 
-  `Open`状态,靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：：
+  `Open`状态,靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：
   
   ![tcp_xmas_scan_open_status](img/tcp_xmas_scan_open_status.jpg)
   
@@ -448,7 +462,7 @@ sudo apt install ufw
   
 - Open|Filtered(Open状态和Filtered状态的实验过程，除了靶机最开始执行的命令不一样，其他所有结果【抓包过程和抓包结果】都相同，也和前面的实验原理匹配上了)
 
-  `Open`状态,靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：：
+  `Open`状态,靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：
   
   ![tcp_xmas_scan_open_status](img/tcp_xmas_scan_open_status.jpg)
   
@@ -477,27 +491,61 @@ sudo apt install ufw
 
 - Closed
   
+  执行代码保证防火墙和端口监听都关闭。
+  
+  ![udp_close_status](img/udp_close_status.jpg)
+  
   - 攻击机执行代码：
   
-  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+    ![udp_close_attacker](img/udp_close_attacker.jpg)
+  
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)【前面一直用命令行抓包，也可以直接打开`wireshark`抓包】
+  
+    ![use_wireshark](img/use_wireshark.jpg)
+  
+    ![udp_package_wireshark](img/udp_package_wireshark.jpg)
   
   - `nmap`复刻：
   
     ```
     sudo nmap -sU -p 53 172.16.111.134
     ```
+    
+    ![nmap13](img/nmap13.jpg)
   
-- Open|Filtered(Open状态和Filtered状态的实验过程，除了靶机最开始执行的命令不一样，其他所有结果【抓包过程和抓包结果】都相同，也和前面的实验原理匹配上了)
+  
+  
+- Open
 
-  `Open`状态,靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：：
-  
-  ![tcp_xmas_scan_open_status](img/tcp_xmas_scan_open_status.jpg)
-  
-  `Filtered`状态,靶机执行：`sudo ufw enable && sudo ufw deny 80/tcp`
+  执行`systemctl start dnsmasq`（端口开启监听【防火墙还是关闭状态】）
   
   - 攻击机执行代码：
+  
+    ![udp_open_attacker](img/udp_open_attacker.jpg)
+  
   - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  
+    ![udp_open_package](img/udp_open_package.jpg)
+  
   - `nmap`复刻：
+  
+    ![nmap14](img/nmap14.jpg)
+  
+- Filtered
+
+  ![udp_filtered_status](img/udp_filtered_status.jpg)
+
+  - 攻击机执行代码：
+
+    ![udp_filtered_attacker](img/udp_filtered_attacker.jpg)
+
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+
+    ![udp_filtered_package](img/udp_filtered_package.jpg)
+
+  - `nmap`复刻：
+
+    ![nmap15](img/nmap15.jpg)
 
 
 
@@ -507,14 +555,61 @@ sudo apt install ufw
 
   答：从上述实验过程可以看出：通过python编程实现的每一次扫描测试的抓包结果与课本中的扫描方法原理完全相符。
 
-
+------
 
 ### 课后思考题：
 
-- 通过本章网络扫描基本原理的学习，试推测应用程序版本信息的扫描原理，和网络漏洞的扫描原理。
-- 网络扫描知识库的构建方法有哪些？
+- **通过本章网络扫描基本原理的学习，试推测应用程序版本信息的扫描原理，和网络漏洞的扫描原理。**
 
+  **应用程序版本信息的扫描：**
 
+  命令：`nmap –sV 172.16.111.134`
+
+  ![edition_detect](img/edition_detect.jpg)
+
+  **原理：**
+
+  1. 首先检查open与open|filtered状态的端口是否在排除端口列表内。如果在排除列表，将该端口剔除。
+  2. 如果是TCP端口，尝试建立TCP连接。尝试等待片刻（通常6秒或更多，具体时间可以查询文件nmap-services-probes中Probe TCP NULL q||对应的totalwaitms）。通常在等待时间内，会接收到目标机发送的“WelcomeBanner”信息。nmap将接收到的Banner与nmap-services-probes中NULL probe中的签名进行对比。查找对应应用程序的名字与版本信息。
+  3. 如果通过“Welcome Banner”无法确定应用程序版本，那么nmap再尝试发送其他的探测包（即从nmap-services-probes中挑选合适的probe），将probe得到回复包与数据库中的签名进行对比。如果反复探测都无法得出具体应用，那么打印出应用返回报文，让用户自行进一步判定。
+  4. 如果是UDP端口，那么直接使用nmap-services-probes中探测包进行探测匹配。根据结果对比分析出UDP应用服务类型。
+  5. 如果探测到应用程序是SSL，那么调用openSSL进一步的侦查运行在SSL之上的具体的应用类型。
+  6. 如果探测到应用程序是SunRPC，那么调用brute-force RPC grinder进一步探测具体服务。
+
+  **网络漏洞的扫描**
+
+  1. 第一阶段：发现目标主机或网络。
+  2. 第二阶段：发现目标后进一步搜集目标信息，包括操作系统类型、运行的服务以及服务软件的版本等。如果目标是一个网络，还可以进一步发现该网络的拓扑结构、路由设备以及各主机的信息。
+  3. 第三阶段：根据搜集到的信息判断或者进一步测试系统是否存在安全漏洞。
+
+  网络安全漏洞扫描技术包括有 PING 扫射（Ping sweep）、操作系统探测 （Operating system identification）、如何探测访问控制规则 （firewalking）、端口扫描 （Port scan）以及漏洞扫描 （vulnerability scan）等。这些技术在网络安全漏洞扫描的三个阶段中各有体现。
+
+  - PING 扫描用于网络安全漏洞扫描的第一阶段，可以帮助我们识别系统是否处于活动状态。
+  - 操作系统探测、如何探测访问控制规则和端口扫描用于网络安全漏洞扫描的第二阶段，其中操作系统探测顾名思义就是对目标主机运行的操作系统进行识别；如何探测访问控制规则用于获取被防火墙保护的远端网络的资料；而端口扫描是通过与目标系统的 TCP/IP 端口连接，并查看该系统处于监听或运行状态的服务。
+  - 网络安全漏洞扫描第三阶段采用的漏洞扫描通常是在端口扫描的基础上，对得到的信息进行相关处理，进而检测出目标系统存在的安全漏洞。
+
+  参考：[网络安全漏洞扫描的工作原理](https://baijiahao.baidu.com/s?id=1597427790469983565&wfr=spider&for=pc)
+
+- **网络扫描知识库的构建方法有哪些？**
+
+  在扫描实践中总结知识库构建：在不同的实验环境中进行发包收包的实验，总结报文的发送和接收，TCP/IP协议栈的每一层的规律和规则，利用黑盒模糊测试思想。
+
+- **除了 nmap 之外，目前还有哪些流行的网络扫描器？和 nmap 进行优缺点对比分析。**
+
+  1. Zmap：Zmap采用了无状态的扫描技术，没有进行完整的TCP三次握手，因此扫描速度极大提升。Zmap的基本功能是扫描发现主机的开放端口。比nmap扫描速度快，但没有nmap扫描的准确，适合大范围扫描。
+  2. Masscan：Masscan与Zmap类似，同样采用了无状态的扫描技术，扫描速度很快，但容易遗漏。
+  3. nmap的优点：
+     - 灵活：支持数十种不同的扫描方式，支持多种目标对象的扫描。
+     - 强大：Nmap可以用于扫描互联网上大规模的计算机。
+     - 可移植：支持主流操作系统：Windows/Linux/Unix/MacOS等等；源码开放，方便移植。
+     - 简单：提供默认的操作能覆盖大部分功能。
+     - 文档丰富：Nmap官网提供了详细的文档描述。Nmap作者及其他安全专家编写了多部Nmap参考书籍。
+     - 流行。
+     - 社区支持。
+
+  Zmap和Masscan采用了无状态的扫描技术，扫描速度非常可观。在信息收集的初级阶段，可以使用Zmap或Masscan进行目标的情势了解，扫描单一端口的情况考虑使用Zmap，而多端口的情况下Masscan则更为快速。在做完初步了解之后，则应该使用功能更加丰富的Nmap进行进一步的详细扫描。
+
+------
 
 ### 遇到的问题和解决办法：
 
@@ -526,7 +621,7 @@ sudo apt install ufw
 
 2. 有些命令在执行的时候报错`You need to be root to run this script`，解决办法：使用`sudo`。
 
-3. 完成TCP connect scan部分的实验之后要进行TCP stealth scan部分的实验：下一部分实验的第一个状态是closed状态，而靶机在完成TCP connect scan部分的实验之后的状态是**过滤状态**，即对应端口开启监听, 防火墙也开启；这时如果只执行`sudo ufw disable`，只是关闭了防火墙，没有关闭端口监听，(其实就是在open的状态而没有在closed状态)，攻击机执行程序的时候就会出现下图所示的情况：
+3. 完成TCP connect scan部分的实验之后要进行TCP stealth scan部分的实验：**下一部分实验的第一个状态是closed状态**，而靶机在完成TCP connect scan部分的实验之后的状态是过滤状态，即对应端口开启监听, 防火墙也开启；这时如果只执行`sudo ufw disable`，只是关闭了防火墙，没有关闭端口监听，(其实就是在open的状态而没有在closed状态)，攻击机执行程序的时候就会出现下图所示的情况：
 
    ![attacker_error](img/attacker_error.jpg)
 
@@ -542,10 +637,13 @@ sudo apt install ufw
    
    根据所在的状态进行调整。
 
-
+------
 
 ### 参考连接
 
 - [scapy2.4.4文档](https://scapy.readthedocs.io/en/latest/)
 - [B站授课视频](https://www.bilibili.com/video/BV1CL41147vX?p=49)
 - [师哥的仓库](https://github.com/CUCCS/2020-ns-public-LyuLumos/tree/ch0x05/ch0x05)
+- [Nmap扫描原理与用法](https://blog.csdn.net/aspirationflow/article/details/7694274)
+- [Nmap、Zmap、Masscan](https://blog.51cto.com/xiaogongju/2068513)
+
