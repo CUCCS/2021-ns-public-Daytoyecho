@@ -134,9 +134,11 @@ ans.summary() # flag为SA表示开放，RA表示关闭
 #### 网络拓扑
 ![topological](img/topological.jpg)
 
-使用的拓扑图类似第四章实验的拓扑结构：Attacker作为扫描端，Victim作为被扫描的靶机。
+**使用的拓扑图类似第四章实验的拓扑结构：Attacker作为扫描端，Victim作为被扫描的靶机。**
 
+在实验四的基础上，我们得知，攻击机本身ping不通靶机，但是由于开了网关作为代理，攻击机就可以ping通靶机了。
 
+![attacker_to_victim](img/attacker_to_victim.jpg)
 
 #### 端口状态模拟
 
@@ -335,9 +337,15 @@ sudo apt install ufw
   
     ![nmap7](img/nmap7.jpg)
   
-- Open|Filtered
+- Open|Filtered(Open状态和Filtered状态的实验过程，除了靶机最开始执行的命令不一样，其他所有结果【抓包过程和抓包结果】都相同，也和前面的实验原理匹配上了)
 
+  `Open`状态靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：
+  
   ![tcp_xmas_scan_open_status](img/tcp_xmas_scan_open_status.jpg)
+  
+  `Filtered`状态靶机执行：`sudo ufw enable && sudo ufw deny 80/tcp`
+  
+  ![filtered_status](img/filtered_status.jpg)
   
   - 攻击机执行代码
   
@@ -363,15 +371,50 @@ sudo apt install ufw
 
 
 - Closed
-  
-  - 攻击机执行代码：
-  - 靶机抓包(先开启抓包，再在攻击机执行代码)
-  - `nmap`复刻：
-- Open|Filtered
+
+  关掉靶机的端口监听和防火墙，和前面的closed状态一样，不重复展示截图了。
 
   - 攻击机执行代码：
+
+    ![tcp_fin_scan_attacker_closed](img/tcp_fin_scan_attacker_closed.jpg)
+
   - 靶机抓包(先开启抓包，再在攻击机执行代码)
+
+    ![tcp_fin_scan_closed_package](img/tcp_fin_scan_closed_package.jpg)
+
+    用wireshark打开刚刚抓到的包：
+
+    ![tcp_fin_scan_closed_package_wireshark](img/tcp_fin_scan_closed_package_wireshark.jpg)
+
   - `nmap`复刻：
+
+    ```
+    sudo nmap -sF -p 80 172.16.111.134
+    ```
+
+    ![nmap9](img/nmap9.jpg)
+
+- Open|Filtered(Open状态和Filtered状态的实验过程，除了靶机最开始执行的命令不一样，其他所有结果【抓包过程和抓包结果】都相同，也和前面的实验原理匹配上了)
+
+  `Open`状态,靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：：
+  
+  ![tcp_xmas_scan_open_status](img/tcp_xmas_scan_open_status.jpg)
+  
+  `Filtered`状态,靶机执行：`sudo ufw enable && sudo ufw deny 80/tcp`
+  
+  ![filtered_status](img/filtered_status.jpg)
+  
+  - 攻击机执行代码：
+  
+    ![tcp_fin_scan_attacker_o_or_f](img/tcp_fin_scan_attacker_o_or_f.jpg)
+  
+  - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  
+    ![tcp_fin_scan_o_or_f_package](img/tcp_fin_scan_o_or_f_package.jpg)
+  
+  - `nmap`复刻：
+  
+    ![nmap10](img/nmap10.jpg)
 
 
 
@@ -381,16 +424,51 @@ sudo apt install ufw
 
 - Closed
   
+  执行代码保证防火墙和端口监听都关闭。
+  
   - 攻击机执行代码：
+  
+    ![tcp_null_scan_closed_attacker](img/tcp_null_scan_closed_attacker.jpg)
+  
   - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  
+    ![tcp_null_scan_closed_package](img/tcp_null_scan_closed_package.jpg)
+  
+    wireshark打开抓到的包：
+  
+    ![tcp_null_scan_closed_package_wireshark](img/tcp_null_scan_closed_package_wireshark.jpg)
+  
   - `nmap`复刻：
-- Open|Filtered
+  
+    ```
+    sudo nmap -sN -p 80 172.16.111.134
+    ```
+  
+    ![nmap12](img/nmap12.jpg)
+  
+- Open|Filtered(Open状态和Filtered状态的实验过程，除了靶机最开始执行的命令不一样，其他所有结果【抓包过程和抓包结果】都相同，也和前面的实验原理匹配上了)
 
+  `Open`状态,靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：：
+  
+  ![tcp_xmas_scan_open_status](img/tcp_xmas_scan_open_status.jpg)
+  
+  `Filtered`状态,靶机执行：`sudo ufw enable && sudo ufw deny 80/tcp`
+  
   - 攻击机执行代码：
+  
+    ![tcp_null_scan_o_or_f_attacker](img/tcp_null_scan_o_or_f_attacker.jpg)
+  
   - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  
+    ![tcp_null_scan_o_or_f_package](img/tcp_null_scan_o_or_f_package.jpg)
+  
+    用wireshark打开抓到的包：
+  
+    ![tcp_null_scan_o_or_f_package_wireshark](img/tcp_null_scan_o_or_f_package_wireshark.jpg)
+  
   - `nmap`复刻：
-
-
+  
+    ![nmap11](img/nmap11.jpg)
 
 #### UDP scan
 
@@ -400,10 +478,23 @@ sudo apt install ufw
 - Closed
   
   - 攻击机执行代码：
+  
   - 靶机抓包(先开启抓包，再在攻击机执行代码)
+  
   - `nmap`复刻：
-- Open|Filtered
+  
+    ```
+    sudo nmap -sU -p 53 172.16.111.134
+    ```
+  
+- Open|Filtered(Open状态和Filtered状态的实验过程，除了靶机最开始执行的命令不一样，其他所有结果【抓包过程和抓包结果】都相同，也和前面的实验原理匹配上了)
 
+  `Open`状态,靶机执行(默认前面完成的是closed部分了，防火墙已经是关闭状态了，只需要打开端口监听；如果防火墙没有关闭，还要执行`sudo ufw disable`)：：
+  
+  ![tcp_xmas_scan_open_status](img/tcp_xmas_scan_open_status.jpg)
+  
+  `Filtered`状态,靶机执行：`sudo ufw enable && sudo ufw deny 80/tcp`
+  
   - 攻击机执行代码：
   - 靶机抓包(先开启抓包，再在攻击机执行代码)
   - `nmap`复刻：
@@ -442,6 +533,14 @@ sudo apt install ufw
    解决办法：执行`systemctl stop apache2` ，关闭端口80。
 
    ![attacker_correction](img/attacker_correction.jpg)
+   
+   总之，只要搞清楚：
+   
+   - closed状态：防火墙和监听端口都关闭
+   - open状态：防火墙关闭，监听端口打开
+   - filtered状态：防火墙和监听端口都打开
+   
+   根据所在的状态进行调整。
 
 
 
